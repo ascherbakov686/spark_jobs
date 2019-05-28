@@ -5,7 +5,7 @@ import pprint
 import ssl
 
 def getUrls():
- cdh="http://cdh.avp.ru:7180"
+ cdh="http://cdh.domain:7180"
  l = []
  yesterday = datetime.today() - timedelta(1)
  f = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 1)
