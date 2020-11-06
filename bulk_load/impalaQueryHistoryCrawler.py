@@ -25,7 +25,7 @@ def getUrls():
 def saveData(url):
  s="["
  login="cron"
- password="******************"
+ password="**********************"
  ssl._create_default_https_context = ssl._create_unverified_context
  r = urllib2.Request(url)
  base64string = base64.b64encode('%s:%s' % (login, password))
@@ -42,7 +42,7 @@ def main():
  sc = spark.sparkContext
  log4j = sc._jvm.org.apache.log4j
  log4j.LogManager.getRootLogger().setLevel(log4j.Level.WARN)
- rdd = sc.parallelize(getUrls())
+ #rdd = sc.parallelize(getUrls())
  #j = spark.read.json(rdd.map(saveData))
  #j.write.format("parquet").mode("append").option("compression","gzip").save("/user/hive/warehouse/impala_queries.db/history")
 
@@ -58,16 +58,21 @@ def main():
 
  #j = spark.read.json("hdfs://nameservice1/tmp/impala_queries/impala_queries_from_PROD_2020-31-October.json",schema=dml_schema).filter("querytype == 'DML'")
 
+ files = "hdfs://nameservice1/tmp/impala_queries/*.json"
 
- rows = rdd.map(saveData)
-
- j = spark.read.json(rows,query_schema).filter("querytype == 'QUERY'")
+ j = spark.read.json(files,query_schema).filter("querytype == 'QUERY'")
+ #print j.count()
+ #j.printSchema()
  j.write.format("parquet").mode("append").option("compression","gzip").save("/user/hive/warehouse/impala_queries.db/history_query")
 
- j = spark.read.json(rows,query_ddl).filter("querytype == 'DDL'")
+ j = spark.read.json(files,query_ddl).filter("querytype == 'DDL'")
+ #print j.count()
+ #j.printSchema()
  j.write.format("parquet").mode("append").option("compression","gzip").save("/user/hive/warehouse/impala_queries.db/history_ddl")
 
- j = spark.read.json(rows,query_dml).filter("querytype == 'DML'")
+ j = spark.read.json(files,query_dml).filter("querytype == 'DML'")
+ #print j.count()
+ #j.printSchema()
  j.write.format("parquet").mode("append").option("compression","gzip").save("/user/hive/warehouse/impala_queries.db/history_dml")
 
 
