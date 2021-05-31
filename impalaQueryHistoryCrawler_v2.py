@@ -1,5 +1,6 @@
 import urllib2,json,re
 from pyspark.sql import SparkSession
+import durationpy
 
 def getUrls():
  impalad = "http://node2.domain.ru:25000"
@@ -23,28 +24,24 @@ def getUrls():
 def saveData(url):
  r = urllib2.Request(url)
 
- #
- # Example
- #
- # Query (id=af45dc86e4b57fe9:c39654e200000000)
- # Session ID: 1e4ce02e6cbf959b:df9a6a4b30581b8c
- # Query submitted: 57.864us 
- # Planning finished: 2s540ms 
- # Ready to start on 49 backends: 2s802ms 
- # First row fetched: 5s948ms
- # ClientFetchWaitTimer: 1s955ms
- # RowMaterializationTimer: 2m46s
-
  rgxs = ['Query\ \(id\=(.+?)\)','Session\ ID\:\ (.+?)$',
-         'Query\ submitted\:\ (.+?)$','Planning\ finished\:\ (.+?)$',
-         'Ready\ to\ start\ on\ \d+\ backends\:\ (.+?)$','First\ row\ fetched\:\ (.+?)$',
+         'Query\ submitted\:.+\((.+?)\)$','Planning\ finished\:.+\((.+?)\)$',
+         'Ready\ to\ start\ on\ \d+\ backends\:.+\((.+?)\)$','First\ row\ fetched\:.+\((.+?)\)$',
          'ClientFetchWaitTimer\:\ (.+?)$','RowMaterializationTimer\:\ (.+?)$']
+
  content = urllib2.urlopen(r).read()
  s = ""
+ val = ""
  for rgx in rgxs:
    m = re.findall(rgx, content, re.MULTILINE)
    if m:
-    s += "%s\t" % str(m[-1])
+ 
+        try:
+         val = durationpy.from_str(str(m[-1])).total_seconds() * 1000
+        except:
+         val = str(m[-1])
+
+        s += "%s\t" % val
 
  return s[:-1]
 
@@ -68,4 +65,3 @@ def main():
 
 if __name__ == '__main__':
  main()
-
