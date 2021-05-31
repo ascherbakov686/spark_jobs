@@ -25,8 +25,8 @@ def saveData(url):
  r = urllib2.Request(url)
 
  rgxs = ['Query\ \(id\=(.+?)\)','Session\ ID\:\ (.+?)$',
-         'Query\ submitted\:.+\((.+?)\)$','Planning\ finished\:.+\((.+?)\)$',
-         'Ready\ to\ start\ on\ \d+\ backends\:.+\((.+?)\)$','First\ row\ fetched\:.+\((.+?)\)$',
+         'Query\ submitted\:\ (.+?)\ \(','Planning\ finished\:\ (.+?)\ \(',
+         'Ready\ to\ start\ on\ \d+\ backends\:\ (.+?)\ \(','First\ row\ fetched\:\ (.+?)\ \(',
          'ClientFetchWaitTimer\:\ (.+?)$','RowMaterializationTimer\:\ (.+?)$']
 
  content = urllib2.urlopen(r).read()
